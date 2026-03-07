@@ -1,0 +1,755 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EcoRoute Agent — AI-Powered Green Mobility Planner</title>
+    <meta name="description"
+        content="EcoRoute Agent: An AI-powered urban mobility planner that finds the greenest, healthiest, and most scenic routes through cities using real-time environmental data.">
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&family=JetBrains+Mono:wght@400;500;600&display=swap"
+        rel="stylesheet">
+
+    <!-- Leaflet CSS -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
+
+    <link rel="stylesheet" href="styles.css">
+</head>
+
+<body>
+    <!-- Particles Background -->
+    <canvas id="particles-canvas"></canvas>
+
+    <!-- Navigation -->
+    <nav id="main-nav">
+        <div class="nav-inner">
+            <a href="#" class="nav-logo" id="nav-logo">
+                <div class="logo-icon">
+                    <svg viewBox="0 0 40 40" fill="none">
+                        <circle cx="20" cy="20" r="18" stroke="url(#logoGrad)" stroke-width="2.5" fill="none" />
+                        <path d="M12 25 L20 12 L28 25" stroke="url(#logoGrad)" stroke-width="2.5" stroke-linecap="round"
+                            stroke-linejoin="round" fill="none" />
+                        <path d="M16 25 L20 18 L24 25" stroke="url(#logoGrad2)" stroke-width="1.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                        <circle cx="20" cy="12" r="2" fill="url(#logoGrad)" />
+                        <defs>
+                            <linearGradient id="logoGrad" x1="0" y1="0" x2="40" y2="40">
+                                <stop offset="0%" stop-color="#34d399" />
+                                <stop offset="100%" stop-color="#06b6d4" />
+                            </linearGradient>
+                            <linearGradient id="logoGrad2" x1="0" y1="0" x2="40" y2="40">
+                                <stop offset="0%" stop-color="#a78bfa" />
+                                <stop offset="100%" stop-color="#06b6d4" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <span class="logo-text">EcoRoute<span class="logo-accent">Agent</span></span>
+            </a>
+            <div class="nav-links">
+                <a href="#features" class="nav-link" id="nav-features">Features</a>
+                <a href="#demo" class="nav-link" id="nav-demo">Live Demo</a>
+                <a href="#tech" class="nav-link" id="nav-tech">Tech Stack</a>
+                <a href="#about" class="nav-link" id="nav-about">About</a>
+            </div>
+            <div class="nav-actions">
+                <button class="btn-ghost" id="btn-theme-toggle" aria-label="Toggle theme">
+                    <svg class="icon-sun" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2">
+                        <circle cx="12" cy="12" r="5" />
+                        <path
+                            d="M12 1v2M12 21v2M4.22 4.22l1.42 1.42M18.36 18.36l1.42 1.42M1 12h2M21 12h2M4.22 19.78l1.42-1.42M18.36 5.64l1.42-1.42" />
+                    </svg>
+                    <svg class="icon-moon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2" style="display:none">
+                        <path d="M21 12.79A9 9 0 1111.21 3 7 7 0 0021 12.79z" />
+                    </svg>
+                </button>
+                <button class="btn-primary" id="btn-try-demo">
+                    <span>Try Demo</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path d="M5 12h14M12 5l7 7-7 7" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section id="hero" class="hero-section">
+        <div class="hero-glow"></div>
+        <div class="hero-content">
+            <div class="hero-badge">
+                <span class="badge-dot"></span>
+                <span>AI-Powered Green Mobility</span>
+            </div>
+            <h1 class="hero-title">
+                <span class="title-line">Navigate Greener.</span>
+                <span class="title-line gradient-text">Live Healthier.</span>
+                <span class="title-line">Move Smarter.</span>
+            </h1>
+            <p class="hero-subtitle">
+                An AI-powered urban mobility planner that finds the <strong>greenest</strong>, most
+                <strong>scenic</strong>,
+                and <strong>healthiest</strong> routes — using real-time air quality, carbon footprint analysis,
+                and multimodal transport optimization.
+            </p>
+            <div class="hero-actions">
+                <button class="btn-primary btn-lg" id="btn-hero-demo">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <polygon points="5 3 19 12 5 21 5 3" />
+                    </svg>
+                    <span>Launch Route Planner</span>
+                </button>
+                <a href="#features" class="btn-outline btn-lg" id="btn-hero-learn">
+                    <span>Learn More</span>
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                        stroke-width="2.5">
+                        <path d="M12 5v14M5 12l7 7 7-7" />
+                    </svg>
+                </a>
+            </div>
+            <div class="hero-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-co2">2.4T</span>
+                    <span class="stat-label">CO₂ Saved Daily</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-routes">15K+</span>
+                    <span class="stat-label">Green Routes</span>
+                </div>
+                <div class="stat-divider"></div>
+                <div class="stat-item">
+                    <span class="stat-value" id="stat-cities">47</span>
+                    <span class="stat-label">Swiss Cities</span>
+                </div>
+            </div>
+        </div>
+        <div class="hero-visual">
+            <div class="map-preview" id="hero-map-container">
+                <div class="map-overlay-gradient"></div>
+                <div id="hero-map"></div>
+                <div class="floating-card card-aqi" id="card-aqi">
+                    <div class="fc-icon fc-green">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66L12 14l4-2 1-6z" />
+                        </svg>
+                    </div>
+                    <div class="fc-content">
+                        <span class="fc-title">Air Quality</span>
+                        <span class="fc-value">Good — AQI 42</span>
+                    </div>
+                </div>
+                <div class="floating-card card-co2" id="card-co2">
+                    <div class="fc-icon fc-blue">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path d="M12 22c5.52 0 10-2.24 10-5s-4.48-5-10-5S2 14.24 2 17s4.48 5 10 5z" />
+                            <path d="M12 12c5.52 0 10-2.24 10-5S17.52 2 12 2 2 4.24 2 7s4.48 5 10 5z" />
+                        </svg>
+                    </div>
+                    <div class="fc-content">
+                        <span class="fc-title">Carbon Saved</span>
+                        <span class="fc-value">-340g vs car</span>
+                    </div>
+                </div>
+                <div class="floating-card card-health" id="card-health">
+                    <div class="fc-icon fc-purple">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2.5">
+                            <path
+                                d="M20.42 4.58a5.4 5.4 0 00-7.65 0L12 5.34l-.77-.76a5.4 5.4 0 00-7.65 7.65l.77.76L12 20.64l7.65-7.65.77-.76a5.4 5.4 0 000-7.65z" />
+                        </svg>
+                    </div>
+                    <div class="fc-content">
+                        <span class="fc-title">Health Score</span>
+                        <span class="fc-value">92/100</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section id="features" class="features-section">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">Features</span>
+                <h2 class="section-title">Intelligent Route Planning,<br><span class="gradient-text">Powered by AI
+                        Agents</span></h2>
+                <p class="section-desc">Multi-agent architecture with specialized AI modules that collaborate to find
+                    your optimal route balancing speed, health, and environmental impact.</p>
+            </div>
+            <div class="features-grid">
+                <div class="feature-card featured" id="feature-agents">
+                    <div class="feature-visual">
+                        <div class="agent-viz">
+                            <div class="agent-node planner">
+                                <div class="agent-pulse"></div>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                                <span>Planner</span>
+                            </div>
+                            <svg class="agent-connector" viewBox="0 0 200 60">
+                                <path d="M30 30 L170 30" stroke="url(#connGrad)" stroke-width="2" stroke-dasharray="6 4"
+                                    fill="none" />
+                                <defs>
+                                    <linearGradient id="connGrad">
+                                        <stop offset="0%" stop-color="#34d399" />
+                                        <stop offset="100%" stop-color="#06b6d4" />
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                            <div class="agent-node scorer">
+                                <div class="agent-pulse"></div>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M12 20V10M18 20V4M6 20v-4" />
+                                </svg>
+                                <span>Scorer</span>
+                            </div>
+                            <svg class="agent-connector" viewBox="0 0 200 60">
+                                <path d="M30 30 L170 30" stroke="url(#connGrad)" stroke-width="2" stroke-dasharray="6 4"
+                                    fill="none" />
+                            </svg>
+                            <div class="agent-node summarizer">
+                                <div class="agent-pulse"></div>
+                                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" />
+                                </svg>
+                                <span>Summarizer</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="feature-content">
+                        <div class="feature-icon-wrap">
+                            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <circle cx="12" cy="12" r="6" />
+                                <circle cx="12" cy="12" r="2" />
+                            </svg>
+                        </div>
+                        <h3>Multi-Agent AI Architecture</h3>
+                        <p>Three specialized agents — Planner, Scorer, and Summarizer — collaborate in real-time to
+                            find, evaluate, and explain the optimal green route for your journey.</p>
+                    </div>
+                </div>
+                <div class="feature-card" id="feature-carbon">
+                    <div class="feature-icon-wrap green">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66L12 14l4-2 1-6z" />
+                            <path d="M12.22 2C8 2 4.22 5.78 4.22 10" />
+                        </svg>
+                    </div>
+                    <h3>Real-Time Carbon Scoring</h3>
+                    <p>Every route gets a live CO₂ footprint score, comparing transport modes and showing you the exact
+                        grams of carbon you'll save.</p>
+                </div>
+                <div class="feature-card" id="feature-air">
+                    <div class="feature-icon-wrap blue">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path
+                                d="M9.59 4.59A2 2 0 1111 8H2m10.59 11.41A2 2 0 1014 16H2m15.73-8.27A2.5 2.5 0 1119.5 12H2" />
+                        </svg>
+                    </div>
+                    <h3>Air Quality Routing</h3>
+                    <p>Avoid pollution hotspots with real-time AQI data. Routes dynamically adjust to keep you breathing
+                        clean air.</p>
+                </div>
+                <div class="feature-card" id="feature-scenic">
+                    <div class="feature-icon-wrap purple">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <rect x="3" y="3" width="18" height="18" rx="2" />
+                            <circle cx="8.5" cy="8.5" r="1.5" />
+                            <path d="M21 15l-5-5L5 21" />
+                        </svg>
+                    </div>
+                    <h3>Scenic Discovery Mode</h3>
+                    <p>AI identifies beautiful detours — parks, landmarks, waterfronts — adding joy to your commute with
+                        minimal time overhead.</p>
+                </div>
+                <div class="feature-card" id="feature-rag">
+                    <div class="feature-icon-wrap cyan">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <path d="M4 19.5A2.5 2.5 0 016.5 17H20" />
+                            <path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" />
+                        </svg>
+                    </div>
+                    <h3>RAG-Powered Local Intel</h3>
+                    <p>Vector-search over Swiss mobility policies, local transport schedules, and community tips stored
+                        in Qdrant for insider knowledge.</p>
+                </div>
+                <div class="feature-card" id="feature-multimodal">
+                    <div class="feature-icon-wrap orange">
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2">
+                            <circle cx="12" cy="12" r="10" />
+                            <path
+                                d="M2 12h20M12 2a15.3 15.3 0 014 10 15.3 15.3 0 01-4 10 15.3 15.3 0 01-4-10 15.3 15.3 0 014-10z" />
+                        </svg>
+                    </div>
+                    <h3>Multimodal Transport</h3>
+                    <p>Seamlessly combine walking, cycling, tram, bus, and train — with live delay data scraped via
+                        Apify actors.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Demo Section -->
+    <section id="demo" class="demo-section">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">Live Demo</span>
+                <h2 class="section-title">Plan Your <span class="gradient-text">Green Route</span></h2>
+                <p class="section-desc">Enter a start and destination to see EcoRoute Agent in action. Our AI agents
+                    will find, score and explain the optimal green route.</p>
+            </div>
+            <div class="demo-container">
+                <div class="demo-sidebar">
+                    <div class="demo-input-panel">
+                        <h3 class="panel-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M12 8v4l3 3" />
+                            </svg>
+                            Route Configuration
+                        </h3>
+                        <div class="input-group">
+                            <label for="input-from">Start Location</label>
+                            <div class="input-wrapper">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <circle cx="12" cy="12" r="3" />
+                                    <circle cx="12" cy="12" r="10" />
+                                </svg>
+                                <input type="text" id="input-from" placeholder="Type any address..." value="Zürich HB"
+                                    autocomplete="off" />
+                                <div class="autocomplete-dropdown" id="autocomplete-from"></div>
+                            </div>
+                            <div class="geocode-status" id="geo-status-from"></div>
+                        </div>
+                        <div class="input-group">
+                            <label for="input-to">Destination</label>
+                            <div class="input-wrapper">
+                                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                    stroke-width="2">
+                                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />
+                                    <circle cx="12" cy="10" r="3" />
+                                </svg>
+                                <input type="text" id="input-to" placeholder="Type any address..." value="ETH Zürich"
+                                    autocomplete="off" />
+                                <div class="autocomplete-dropdown" id="autocomplete-to"></div>
+                            </div>
+                            <div class="geocode-status" id="geo-status-to"></div>
+                        </div>
+                        <div class="preference-section">
+                            <label>Optimization Priority</label>
+                            <div class="pref-chips">
+                                <button class="pref-chip active" data-pref="eco" id="pref-eco">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <path d="M17 8C8 10 5.9 16.17 3.82 21.34l1.89.66L12 14l4-2 1-6z" />
+                                    </svg>
+                                    Eco-Friendly
+                                </button>
+                                <button class="pref-chip" data-pref="health" id="pref-health">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <path
+                                            d="M20.42 4.58a5.4 5.4 0 00-7.65 0L12 5.34l-.77-.76a5.4 5.4 0 00-7.65 7.65l.77.76L12 20.64l7.65-7.65.77-.76a5.4 5.4 0 000-7.65z" />
+                                    </svg>
+                                    Healthiest
+                                </button>
+                                <button class="pref-chip" data-pref="scenic" id="pref-scenic">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <rect x="3" y="3" width="18" height="18" rx="2" />
+                                        <circle cx="8.5" cy="8.5" r="1.5" />
+                                        <path d="M21 15l-5-5L5 21" />
+                                    </svg>
+                                    Most Scenic
+                                </button>
+                                <button class="pref-chip" data-pref="fast" id="pref-fast">
+                                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2.5">
+                                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" />
+                                    </svg>
+                                    Fastest
+                                </button>
+                            </div>
+                        </div>
+                        <div class="preference-section">
+                            <label>Transport Modes</label>
+                            <div class="mode-toggles">
+                                <button class="mode-btn active" data-mode="walk" id="mode-walk" title="Walking">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="12" cy="5" r="1.5" />
+                                        <path d="M9 20l3-12 4 1 1 5M14 17l2 3M9 14l-2 6" />
+                                    </svg>
+                                </button>
+                                <button class="mode-btn active" data-mode="bike" id="mode-bike" title="Cycling">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <circle cx="5.5" cy="17.5" r="3.5" />
+                                        <circle cx="18.5" cy="17.5" r="3.5" />
+                                        <path d="M15 6a1 1 0 100-2 1 1 0 000 2zM12 17.5V14l-3-3 4-3 2 3h3" />
+                                    </svg>
+                                </button>
+                                <button class="mode-btn active" data-mode="tram" id="mode-tram" title="Tram">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="4" y="3" width="16" height="16" rx="2" />
+                                        <path d="M4 11h16M12 3v8M8 19l-2 3M16 19l2 3" />
+                                        <circle cx="8" cy="15" r="1" />
+                                        <circle cx="16" cy="15" r="1" />
+                                    </svg>
+                                </button>
+                                <button class="mode-btn active" data-mode="train" id="mode-train" title="Train">
+                                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                        stroke-width="2">
+                                        <rect x="4" y="2" width="16" height="18" rx="2" />
+                                        <path d="M4 10h16M9 22l-2-4M15 22l2-4" />
+                                        <circle cx="8" cy="15" r="1" />
+                                        <circle cx="16" cy="15" r="1" />
+                                        <path d="M4 6h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                        </div>
+                        <button class="btn-primary btn-full" id="btn-plan-route">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2.5">
+                                <path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z" />
+                            </svg>
+                            <span>Plan My Route</span>
+                        </button>
+                        <div class="api-status" id="api-status">
+                            <span class="api-dot online"></span>
+                            <span>Live APIs: OSRM Routing · Nominatim Geocoding · OpenStreetMap POIs</span>
+                        </div>
+                    </div>
+
+                    <!-- Agent Activity Panel -->
+                    <div class="agent-activity-panel" id="agent-panel" style="display:none;">
+                        <h3 class="panel-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <circle cx="12" cy="12" r="6" />
+                                <circle cx="12" cy="12" r="2" />
+                            </svg>
+                            Agent Activity
+                        </h3>
+                        <div class="agent-logs" id="agent-logs"></div>
+                    </div>
+
+                    <!-- Results Panel -->
+                    <div class="results-panel" id="results-panel" style="display:none;">
+                        <h3 class="panel-title">
+                            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M22 11.08V12a10 10 0 11-5.93-9.14" />
+                                <path d="M22 4L12 14.01l-3-3" />
+                            </svg>
+                            Route Analysis
+                        </h3>
+                        <div id="route-results"></div>
+                        <canvas id="carbon-chart" style="margin-top:12px;max-height:200px;"></canvas>
+                        <button class="btn-outline btn-full" id="btn-export" style="margin-top:12px;">
+                            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4M7 10l5 5 5-5M12 15V3" />
+                            </svg>
+                            <span>Download Eco Report</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="demo-map-container">
+                    <div id="demo-map"></div>
+                    <div class="map-legend" id="map-legend" style="display:none;">
+                        <div class="legend-item"><span class="legend-line green"></span>Low Carbon</div>
+                        <div class="legend-item"><span class="legend-line yellow"></span>Medium Carbon</div>
+                        <div class="legend-item"><span class="legend-line red"></span>High Carbon</div>
+                        <div class="legend-item"><span class="legend-dot blue"></span>Stop / Transfer</div>
+                        <div class="legend-item"><span class="legend-dot purple"></span>POI / Scenic</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Tech Stack Section -->
+    <section id="tech" class="tech-section">
+        <div class="section-container">
+            <div class="section-header">
+                <span class="section-tag">Architecture</span>
+                <h2 class="section-title">Built With <span class="gradient-text">Cutting-Edge Tech</span></h2>
+                <p class="section-desc">A multi-agent RAG pipeline integrating partner technologies for real-time,
+                    intelligent mobility planning.</p>
+            </div>
+            <div class="arch-diagram" id="arch-diagram">
+                <div class="arch-layer layer-input">
+                    <div class="layer-label">Input Layer</div>
+                    <div class="arch-nodes">
+                        <div class="arch-node">
+                            <div class="node-icon">📍</div>
+                            <span>User Query</span>
+                        </div>
+                        <div class="arch-node">
+                            <div class="node-icon">⚙️</div>
+                            <span>Preferences</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="arch-arrow">
+                    <svg viewBox="0 0 24 60">
+                        <path d="M12 0 L12 50 M6 44 L12 50 L18 44" stroke="url(#archGrad)" stroke-width="2"
+                            fill="none" />
+                        <defs>
+                            <linearGradient id="archGrad" x1="0" y1="0" x2="0" y2="1">
+                                <stop offset="0%" stop-color="#34d399" />
+                                <stop offset="100%" stop-color="#06b6d4" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                </div>
+                <div class="arch-layer layer-agents">
+                    <div class="layer-label">Agent Orchestration (LangChain / CrewAI)</div>
+                    <div class="arch-nodes">
+                        <div class="arch-node agent-node-arch">
+                            <div class="node-icon">🗺️</div>
+                            <span>Route Planner Agent</span>
+                        </div>
+                        <div class="arch-node agent-node-arch">
+                            <div class="node-icon">📊</div>
+                            <span>Carbon Scorer Agent</span>
+                        </div>
+                        <div class="arch-node agent-node-arch">
+                            <div class="node-icon">💬</div>
+                            <span>Summarizer Agent</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="arch-arrow">
+                    <svg viewBox="0 0 24 60">
+                        <path d="M12 0 L12 50 M6 44 L12 50 L18 44" stroke="url(#archGrad)" stroke-width="2"
+                            fill="none" />
+                    </svg>
+                </div>
+                <div class="arch-layer layer-data">
+                    <div class="layer-label">Data & Intelligence Layer</div>
+                    <div class="arch-nodes">
+                        <div class="arch-node partner-node">
+                            <div class="node-icon">🔍</div>
+                            <span>Qdrant Vector DB</span>
+                            <small>RAG over Swiss mobility data</small>
+                        </div>
+                        <div class="arch-node partner-node">
+                            <div class="node-icon">🕷️</div>
+                            <span>Apify Web Scraper</span>
+                            <small>Live transport & AQI data</small>
+                        </div>
+                        <div class="arch-node partner-node">
+                            <div class="node-icon">🧠</div>
+                            <span>LLM (Grok / Llama)</span>
+                            <small>Reasoning & generation</small>
+                        </div>
+                    </div>
+                </div>
+                <div class="arch-arrow">
+                    <svg viewBox="0 0 24 60">
+                        <path d="M12 0 L12 50 M6 44 L12 50 L18 44" stroke="url(#archGrad)" stroke-width="2"
+                            fill="none" />
+                    </svg>
+                </div>
+                <div class="arch-layer layer-output">
+                    <div class="layer-label">Output Layer</div>
+                    <div class="arch-nodes">
+                        <div class="arch-node">
+                            <div class="node-icon">🗺️</div>
+                            <span>Interactive Map</span>
+                        </div>
+                        <div class="arch-node">
+                            <div class="node-icon">📋</div>
+                            <span>Route Summary</span>
+                        </div>
+                        <div class="arch-node">
+                            <div class="node-icon">🌿</div>
+                            <span>Eco Report</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tech-cards">
+                <div class="tech-card" id="tech-qdrant">
+                    <div class="tech-logo">
+                        <svg width="40" height="40" viewBox="0 0 40 40">
+                            <circle cx="20" cy="20" r="18" stroke="#e879a0" stroke-width="2" fill="none" />
+                            <polygon points="20,6 32,14 32,26 20,34 8,26 8,14" stroke="#e879a0" stroke-width="1.5"
+                                fill="rgba(232,121,160,0.1)" />
+                            <circle cx="20" cy="20" r="4" fill="#e879a0" />
+                        </svg>
+                    </div>
+                    <h4>Qdrant</h4>
+                    <p>High-performance vector search for RAG over Swiss transport policies based on municipal and city
+                        guidelines.</p>
+                </div>
+                <div class="tech-card" id="tech-apify">
+                    <div class="tech-logo">
+                        <svg width="40" height="40" viewBox="0 0 40 40">
+                            <rect x="4" y="4" width="32" height="32" rx="8" stroke="#00d68f" stroke-width="2"
+                                fill="none" />
+                            <path d="M12 28V16l8-8 8 8v12" stroke="#00d68f" stroke-width="2" fill="none" />
+                            <circle cx="20" cy="20" r="3" fill="#00d68f" />
+                        </svg>
+                    </div>
+                    <h4>Apify</h4>
+                    <p>Cloud-based web scraping actors that pull real-time transit delays, weather conditions, and
+                        environmental data.</p>
+                </div>
+                <div class="tech-card" id="tech-langchain">
+                    <div class="tech-logo">
+                        <svg width="40" height="40" viewBox="0 0 40 40">
+                            <circle cx="12" cy="12" r="5" stroke="#3b82f6" stroke-width="2" fill="none" />
+                            <circle cx="28" cy="12" r="5" stroke="#3b82f6" stroke-width="2" fill="none" />
+                            <circle cx="20" cy="28" r="5" stroke="#3b82f6" stroke-width="2" fill="none" />
+                            <path d="M16 14L18 24M24 14L22 24M15 12h10" stroke="#3b82f6" stroke-width="1.5"
+                                fill="none" />
+                        </svg>
+                    </div>
+                    <h4>LangChain / CrewAI</h4>
+                    <p>Multi-agent orchestration framework enabling collaborative reasoning between specialized route
+                        planning agents.</p>
+                </div>
+                <div class="tech-card" id="tech-leaflet">
+                    <div class="tech-logo">
+                        <svg width="40" height="40" viewBox="0 0 40 40">
+                            <path d="M20 4C13 4 8 9 8 16c0 10 12 20 12 20s12-10 12-20c0-7-5-12-12-12z" stroke="#4ade80"
+                                stroke-width="2" fill="rgba(74,222,128,0.15)" />
+                            <circle cx="20" cy="16" r="5" stroke="#4ade80" stroke-width="2" fill="none" />
+                        </svg>
+                    </div>
+                    <h4>Leaflet / Folium</h4>
+                    <p>Beautiful interactive maps with custom overlays for route visualization, AQI heatmaps, and scenic
+                        POI markers.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- About Section -->
+    <section id="about" class="about-section">
+        <div class="section-container">
+            <div class="about-grid">
+                <div class="about-content">
+                    <span class="section-tag">About</span>
+                    <h2 class="section-title">Smarter Routes,<br><span class="gradient-text">Greener Planet</span></h2>
+                    <p>EcoRoute Agent is an <strong>AI-powered urban mobility platform</strong> designed to make
+                        every journey healthier, more sustainable, and more enjoyable.</p>
+                    <p>By combining multi-agent AI with real-time environmental data, EcoRoute Agent doesn't just
+                        find routes — it finds <em>the right route for you and the planet</em>. Less pollution
+                        exposure, fewer carbon emissions, and more moments of joy on every commute.</p>
+                    <div class="about-links">
+                        <a href="#demo" class="about-link" id="link-try-now">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <polygon points="5 3 19 12 5 21 5 3" />
+                            </svg>
+                            Try the Planner
+                        </a>
+                        <a href="#tech" class="about-link" id="link-learn-arch">
+                            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                                stroke-width="2">
+                                <circle cx="12" cy="12" r="10" />
+                                <circle cx="12" cy="12" r="6" />
+                                <circle cx="12" cy="12" r="2" />
+                            </svg>
+                            Explore Architecture
+                        </a>
+                    </div>
+                </div>
+                <div class="about-visual">
+                    <div class="impact-cards">
+                        <div class="impact-card">
+                            <div class="impact-icon">🌍</div>
+                            <div class="impact-number" id="impact-co2">2.4 Tonnes</div>
+                            <div class="impact-label">CO₂ Reduced Per Day</div>
+                        </div>
+                        <div class="impact-card">
+                            <div class="impact-icon">🫁</div>
+                            <div class="impact-number" id="impact-aqi">34% Less</div>
+                            <div class="impact-label">Pollution Exposure</div>
+                        </div>
+                        <div class="impact-card">
+                            <div class="impact-icon">🚶</div>
+                            <div class="impact-number" id="impact-active">+22 Min</div>
+                            <div class="impact-label">Active Transport Daily</div>
+                        </div>
+                        <div class="impact-card">
+                            <div class="impact-icon">💚</div>
+                            <div class="impact-number" id="impact-score">92/100</div>
+                            <div class="impact-label">Avg Health Score</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer id="main-footer">
+        <div class="footer-inner">
+            <div class="footer-brand">
+                <div class="footer-logo">
+                    <svg viewBox="0 0 40 40" fill="none" width="32" height="32">
+                        <circle cx="20" cy="20" r="18" stroke="url(#fLogoGrad)" stroke-width="2.5" fill="none" />
+                        <path d="M12 25 L20 12 L28 25" stroke="url(#fLogoGrad)" stroke-width="2.5"
+                            stroke-linecap="round" stroke-linejoin="round" fill="none" />
+                        <circle cx="20" cy="12" r="2" fill="url(#fLogoGrad)" />
+                        <defs>
+                            <linearGradient id="fLogoGrad" x1="0" y1="0" x2="40" y2="40">
+                                <stop offset="0%" stop-color="#34d399" />
+                                <stop offset="100%" stop-color="#06b6d4" />
+                            </linearGradient>
+                        </defs>
+                    </svg>
+                    <span>EcoRoute Agent</span>
+                </div>
+                <p>AI-Powered Green Mobility for a Sustainable Future</p>
+            </div>
+            <div class="footer-meta">
+                <span>Built with 💚 for a greener world</span>
+                <span class="footer-dot">·</span>
+                <span>© 2026 EcoRoute Agent</span>
+            </div>
+        </div>
+    </footer>
+
+    <!-- Leaflet JS -->
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="app.js"></script>
+</body>
+
+</html>

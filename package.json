@@ -1,0 +1,16 @@
+{
+  "name": "ecoroute-agent",
+  "version": "1.0.0",
+  "description": "EcoRoute Agent — AI-Powered Green Mobility Planner",
+  "scripts": {
+    "start": "npx -y serve -l 8080",
+    "dev": "npx -y serve -l 8080"
+  },
+  "keywords": [
+    "ecoroute",
+    "green-mobility",
+    "ai-agent",
+    "hackathon"
+  ],
+  "license": "MIT"
+}
